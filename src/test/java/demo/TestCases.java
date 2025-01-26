@@ -38,6 +38,7 @@ public class TestCases {
 
             driver.get("https://www.flipkart.com/");
             Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
+            System.out.println("Log : Opened flipkart.com");
 
             sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
 
@@ -46,14 +47,15 @@ public class TestCases {
             Wrappers.sendKeys(driver, By.xpath(searchInputBoxXpath), "Washing Machine");
             searchInputBox.sendKeys(Keys.END);
             searchInputBox.sendKeys(Keys.ENTER);
+            System.out.println("Log : Search for Washing Machine");
 
             String sortByPopularityXpath = "//div[contains(@class,'zg-M3Z') and contains(text(),'Popularity')]";
             Wrappers.clickWebElement(driver, By.xpath(sortByPopularityXpath));
+            System.out.println("Log : Sorted by Popularity");
 
             Thread.sleep(5000); // wait for the product raiting to become un-stale
 
             String productRatingXpath = "//span[contains(@id,'productRating')]";
-            System.out.println("Test Case 01 : Checkpoint 1"); // debug statement
             List<WebElement> productRatingWebElements = Wrappers.findWebElementList(driver, By.xpath(productRatingXpath), 3, 1);
             int productCount = 0; // for items less than equal to 4 stars
             for (WebElement productRating : productRatingWebElements) {
@@ -61,8 +63,10 @@ public class TestCases {
                     productCount ++;
                 }
             }
+
             System.out.println("Product count for products less than 4 stars : "+productCount);
             sa.assertAll();
+
         } catch (Exception e) {
             // Log the exception or throw a custom exception
             System.out.println("Exception in TestCase01: " + e.getMessage());
@@ -72,7 +76,7 @@ public class TestCases {
         System.out.println("Test Case 01 : End");
     }
     
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -127,6 +131,46 @@ public class TestCases {
 
         System.out.println("Test Case 02 : End");
     }
+
+    @Test(enabled = true)
+    public void testCase03() {
+        System.out.println("Test Case 03 : Start");
+        try {
+            SoftAssert sa = new SoftAssert();
+
+            driver.get("https://www.flipkart.com/");
+            Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
+            System.out.println("Log : Opened flipkart.com");
+
+            sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
+
+            String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
+            WebElement searchInputBox = Wrappers.findWebElement(driver, By.xpath(searchInputBoxXpath), 3, 1);
+            Wrappers.sendKeys(driver, By.xpath(searchInputBoxXpath), "Coffee Mug");
+            searchInputBox.sendKeys(Keys.END);
+            searchInputBox.sendKeys(Keys.ENTER);
+            System.out.println("Log : Search for Coffee Mug");
+
+            String customerRatingXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]";
+            Wrappers.clickWebElement(driver, By.xpath(customerRatingXpath));
+            Thread.sleep(1000);
+            String ratingCheckBoxLabel = "4\u2605 & above"; // 4★ & above
+            String fourStarAndAboveRatingCheckBocXpath = "//div[@title='"+ratingCheckBoxLabel+"']//input[@type='checkbox']";
+            System.out.println("Checking Represenntation of ★ : "+fourStarAndAboveRatingCheckBocXpath);
+            Wrappers.clickWebElement(driver, By.xpath(fourStarAndAboveRatingCheckBocXpath));
+            Thread.sleep(5000); 
+            
+            sa.assertAll();
+
+        } catch (Exception e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Exception in TestCase03: " + e.getMessage());
+            Assert.fail("Exception in TestCase03: " + e.getMessage());
+        }
+
+        System.out.println("Test Case 03 : End");
+    }
+    
     /*
      * Do not change the provided methods unless necessary, they will help in automation and assessment
      */
