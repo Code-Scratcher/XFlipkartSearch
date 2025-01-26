@@ -15,6 +15,7 @@ import org.testng.asserts.SoftAssert;
 import org.testng.Assert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -29,7 +30,7 @@ public class TestCases {
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */
-    @Test
+    @Test(enabled = false)
     public void testCase01() {
         System.out.println("Test Case 01 : Start");
         try {
@@ -61,10 +62,6 @@ public class TestCases {
                 }
             }
             System.out.println("Product count for products less than 4 stars : "+productCount);
-
-
-            Thread.sleep(20000);
-
             sa.assertAll();
         } catch (Exception e) {
             // Log the exception or throw a custom exception
@@ -74,7 +71,62 @@ public class TestCases {
 
         System.out.println("Test Case 01 : End");
     }
-     
+    
+    @Test(enabled = true)
+    public void testCase02() {
+        System.out.println("Test Case 02 : Start");
+        try {
+            SoftAssert sa = new SoftAssert();
+
+            driver.get("https://www.flipkart.com/");
+            Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
+            System.out.println("Log : Opened flipkart.com");
+
+            sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
+
+            String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
+            WebElement searchInputBox = Wrappers.findWebElement(driver, By.xpath(searchInputBoxXpath), 3, 1);
+            Wrappers.sendKeys(driver, By.xpath(searchInputBoxXpath), "iPhone");
+            searchInputBox.sendKeys(Keys.END);
+            searchInputBox.sendKeys(Keys.ENTER);
+            System.out.println("Log : Search for iPhone");
+
+            // This xpath with only locate items that have a discount
+            String discountPercentXpath = "//div[@class='hl05eU']/div[@class='UkUFwK']//span";
+            String productNameXpath = ".//ancestor::div[@class='yKfJKb row']//descendant::div[@class='KzDlHZ']"; // child xapth of discountPercentXpath
+            
+
+            List<WebElement> discountPercentWebElements = Wrappers.findWebElementList(driver, By.xpath(discountPercentXpath), 3, 1);
+
+            int discountPercentToVerify = 10;
+            HashMap<String, Integer> productDiscountMap = new HashMap<String, Integer>();
+            for (WebElement discountPercentWebElement : discountPercentWebElements) {
+                int discountPercent = Integer.parseInt(discountPercentWebElement.getText().replace("% off", "")); 
+                if (discountPercent>discountPercentToVerify) {
+                    WebElement productNameWebElement = discountPercentWebElement.findElement(By.xpath(productNameXpath));
+                    productDiscountMap.put(productNameWebElement.getText(), discountPercent);
+                }
+            }
+
+            if (productDiscountMap.size()>0) {
+                System.out.println("Products with more than 17% discount : ");
+                for (String productName : productDiscountMap.keySet()) {
+                    System.out.println(productName + " : " + productDiscountMap.get(productName) + "%");
+                }
+            } else {
+                System.out.println("No products with more than "+discountPercentToVerify+"% discount");
+            }
+            
+            sa.assertAll();
+
+        } catch (Exception e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Exception in TestCase02: " + e.getMessage());
+            Assert.fail("Exception in TestCase02: " + e.getMessage());
+        }
+
+        System.out.println("Test Case 02 : End");
+    }
     /*
      * Do not change the provided methods unless necessary, they will help in automation and assessment
      */
