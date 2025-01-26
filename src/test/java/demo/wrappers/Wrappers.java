@@ -88,4 +88,21 @@ public class Wrappers {
         }
     }
 
+    public static void sendKeys(WebDriver driver, By locator, String keys) {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            wait.until(ExpectedConditions.elementToBeClickable(locator));
+            WebElement textInputElement = Wrappers.findWebElement(driver, locator, 3, 1);
+            // WebElement textInputElement = driver.findElement(locator);
+            textInputElement.click();
+            textInputElement.clear();
+            textInputElement.sendKeys(keys);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Error sending keys : " + e.getMessage());
+        }
+    }
+
 }
