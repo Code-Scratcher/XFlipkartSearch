@@ -48,7 +48,7 @@ public class TestCases {
 
             String sortByPopularityXpath = "//div[contains(@class,'zg-M3Z') and contains(text(),'Popularity')]";
             Wrappers.clickWebElement(driver, By.xpath(sortByPopularityXpath));
-            
+
             Thread.sleep(5000); // wait for the product raiting to become un-stale
 
             String productRatingXpath = "//span[contains(@id,'productRating')]";
