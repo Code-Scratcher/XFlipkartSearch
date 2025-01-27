@@ -1,6 +1,7 @@
 package demo;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -8,6 +9,8 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -136,6 +139,7 @@ public class TestCases {
     public void testCase03() {
         System.out.println("Test Case 03 : Start");
         try {
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
             SoftAssert sa = new SoftAssert();
 
             driver.get("https://www.flipkart.com/");
@@ -144,6 +148,7 @@ public class TestCases {
 
             sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
 
+            // search for Coffee Mug
             String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
             WebElement searchInputBox = Wrappers.findWebElement(driver, By.xpath(searchInputBoxXpath), 3, 1);
             Wrappers.sendKeys(driver, By.xpath(searchInputBoxXpath), "Coffee Mug");
@@ -151,13 +156,45 @@ public class TestCases {
             searchInputBox.sendKeys(Keys.ENTER);
             System.out.println("Log : Search for Coffee Mug");
 
-            String customerRatingXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]";
-            Wrappers.clickWebElement(driver, By.xpath(customerRatingXpath));
-            Thread.sleep(1000);
-            String ratingCheckBoxLabel = "4"; // 4★ & above
-            String ratingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+ratingCheckBoxLabel+"')]//input[@type='checkbox']";
-            Wrappers.clickWebElement(driver, By.xpath(ratingCheckBoxXpath));
-            Thread.sleep(5000); 
+            String customerRatingDropDownXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]";
+            String customerRatingDropDownOpenedXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]//div[@class='SDsN9S']"; // div[@class='SDsN9S'] is present only when the dropdown is opened
+
+            int rating = 4;
+            String customerRatingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//input[@type='checkbox']//following-sibling::div[1]"; 
+
+            WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            if(wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(customerRatingDropDownOpenedXpath)))!=null) {
+                jsExecutor.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(customerRatingCheckBoxXpath)));
+                Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
+                System.out.println("Log : Clicked on Customer Ratings Checkbox");
+                System.out.println("Log : Filtered by "+rating+"* & above");
+            } else {
+                jsExecutor.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(customerRatingDropDownXpath)));
+                Wrappers.clickWebElement(driver, By.xpath(customerRatingDropDownXpath));
+                System.out.println("Log : Clicked on Customer Ratings Dropdown");
+                Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
+                System.out.println("Log : Filtered by "+rating+"* & above");
+            }
+            
+
+            // JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            // jsExecutor.executeScript("window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });");
+            // jsExecutor.executeScript("window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });");
+
+            // System.out.println("Log : Clicked on Customer Ratings dropdown");
+
+            // // Scroll to the middle of the page
+            // JavascriptExecutor js = (JavascriptExecutor) driver;
+            // long height = (long) js.executeScript("return document.body.scrollHeight");
+            // long center = height / 2;
+            // js.executeScript("window.scrollTo(0, " + center + ")");
+
+            // String ratingCheckBoxLabel = "4"; // 4★ & above
+            // String ratingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+ratingCheckBoxLabel+"')]//input[@type='checkbox']";
+            // Wrappers.clickWebElement(driver, By.xpath(ratingCheckBoxXpath));
+            // System.out.println("Log : Filtered by "+ratingCheckBoxLabel+"★ & above");
+            
+            Thread.sleep(50000);
             
             sa.assertAll();
 
