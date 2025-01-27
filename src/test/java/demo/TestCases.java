@@ -154,10 +154,9 @@ public class TestCases {
             String customerRatingXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]";
             Wrappers.clickWebElement(driver, By.xpath(customerRatingXpath));
             Thread.sleep(1000);
-            String ratingCheckBoxLabel = "4\u2605 & above"; // 4★ & above
-            String fourStarAndAboveRatingCheckBocXpath = "//div[@title='"+ratingCheckBoxLabel+"']//input[@type='checkbox']";
-            System.out.println("Checking Represenntation of ★ : "+fourStarAndAboveRatingCheckBocXpath);
-            Wrappers.clickWebElement(driver, By.xpath(fourStarAndAboveRatingCheckBocXpath));
+            String ratingCheckBoxLabel = "4"; // 4★ & above
+            String ratingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+ratingCheckBoxLabel+"')]//input[@type='checkbox']";
+            Wrappers.clickWebElement(driver, By.xpath(ratingCheckBoxXpath));
             Thread.sleep(5000); 
             
             sa.assertAll();

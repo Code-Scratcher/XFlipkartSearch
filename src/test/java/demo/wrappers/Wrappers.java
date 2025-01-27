@@ -4,8 +4,10 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.devtools.idealized.Javascript;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -81,7 +83,10 @@ public class Wrappers {
             wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             wait.until(ExpectedConditions.and(ExpectedConditions.visibilityOfElementLocated(locator),
             ExpectedConditions.elementToBeClickable(locator)));
-            driver.findElement(locator).click();
+            WebElement clickableElement = Wrappers.findWebElement(driver, locator, 3, 1);
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", clickableElement);
+            clickableElement.click();
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Error in clicking element : "+e.getMessage());
