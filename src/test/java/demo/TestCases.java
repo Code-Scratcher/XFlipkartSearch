@@ -156,25 +156,29 @@ public class TestCases {
             searchInputBox.sendKeys(Keys.ENTER);
             System.out.println("Log : Search for Coffee Mug");
 
-            String customerRatingDropDownXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]";
+            String customerRatingDropDownXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]"; // when Customer Ratings rating dropdown is closed
             String customerRatingDropDownOpenedXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]//div[@class='SDsN9S']"; // div[@class='SDsN9S'] is present only when the dropdown is opened
 
             int rating = 4;
+            String customerRatingOptionLabelXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//div[@class='_6i1qKy']"; // xpath for dropdown option label
+            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingOptionLabelXpath))); // scroll the label into center of the viewport
             String customerRatingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//input[@type='checkbox']//following-sibling::div[1]"; 
+            driver.findElement(By.xpath(customerRatingCheckBoxXpath)).click();
+            //Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
 
-            WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            if(wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(customerRatingDropDownOpenedXpath)))!=null) {
-                jsExecutor.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(customerRatingCheckBoxXpath)));
-                Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
-                System.out.println("Log : Clicked on Customer Ratings Checkbox");
-                System.out.println("Log : Filtered by "+rating+"* & above");
-            } else {
-                jsExecutor.executeScript("arguments[0].scrollIntoView();", driver.findElement(By.xpath(customerRatingDropDownXpath)));
-                Wrappers.clickWebElement(driver, By.xpath(customerRatingDropDownXpath));
-                System.out.println("Log : Clicked on Customer Ratings Dropdown");
-                Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
-                System.out.println("Log : Filtered by "+rating+"* & above");
-            }
+            // WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            // if(wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(customerRatingDropDownOpenedXpath)))!=null) {
+            //     jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingCheckBoxXpath)));
+            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
+            //     System.out.println("Log : Clicked on Customer Ratings Checkbox");
+            //     System.out.println("Log : Filtered by "+rating+"* & above");
+            // } else {
+            //     jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingDropDownXpath)));
+            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingDropDownXpath));
+            //     System.out.println("Log : Clicked on Customer Ratings Dropdown");
+            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
+            //     System.out.println("Log : Filtered by "+rating+"* & above");
+            // }
             
 
             // JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;

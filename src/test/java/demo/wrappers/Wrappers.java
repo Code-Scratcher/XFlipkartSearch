@@ -81,11 +81,11 @@ public class Wrappers {
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-            wait.until(ExpectedConditions.and(ExpectedConditions.visibilityOfElementLocated(locator),
-            ExpectedConditions.elementToBeClickable(locator)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+            wait.until(ExpectedConditions.elementToBeClickable(locator));
             WebElement clickableElement = Wrappers.findWebElement(driver, locator, 3, 1);
             JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-            jsExecutor.executeScript("arguments[0].scrollIntoView();", clickableElement);
+            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", clickableElement); // scroll to center of viewport
             clickableElement.click();
         } catch (Exception e) {
             // TODO: handle exception
