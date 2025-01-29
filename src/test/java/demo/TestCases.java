@@ -18,8 +18,11 @@ import org.testng.asserts.SoftAssert;
 import org.testng.Assert;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 
@@ -164,6 +167,8 @@ public class TestCases {
             jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingOptionLabelXpath))); // scroll the label into center of the viewport
             String customerRatingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//input[@type='checkbox']//following-sibling::div[1]"; 
             driver.findElement(By.xpath(customerRatingCheckBoxXpath)).click();
+
+            Thread.sleep(5000); 
             //Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
 
             // WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
@@ -180,25 +185,37 @@ public class TestCases {
             //     System.out.println("Log : Filtered by "+rating+"* & above");
             // }
             
+            String productreviewNumberXpath = "//span[contains(@class,'Wphh3N')]"; // parent xpath
+            String productParentXpath = ".//ancestor::div[@class='slAVV4']"; // parent xpath of productreviewNumberXpath
+            String productImageURLXpath = ".//descendant::img"; // child xpath of productreviewNumberXpath, @src contains the image url
+            String productTitleXpath = ".//descendant::a[@class='wjcEIp']"; // child xpath of productreviewNumberXpath, @title contains the title
 
-            // JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-            // jsExecutor.executeScript("window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });");
-            // jsExecutor.executeScript("window.scrollTo({ top: document.body.scrollHeight / 2, behavior: 'smooth' });");
+            HashMap<WebElement, Integer> productReviewMap = new HashMap<WebElement, Integer>(); // map to store product and its review count
 
-            // System.out.println("Log : Clicked on Customer Ratings dropdown");
+            List<WebElement> reviewNumberWebElements = Wrappers.findWebElementList(driver, By.xpath(productreviewNumberXpath), 3, 1);
 
-            // // Scroll to the middle of the page
-            // JavascriptExecutor js = (JavascriptExecutor) driver;
-            // long height = (long) js.executeScript("return document.body.scrollHeight");
-            // long center = height / 2;
-            // js.executeScript("window.scrollTo(0, " + center + ")");
+            for (WebElement reviewInteger : reviewNumberWebElements) {
+                WebElement productParentWebElement = reviewInteger.findElement(By.xpath(productParentXpath));
+                int reviewNumber = Integer.parseInt(reviewInteger.getText().replaceAll("\\D", "")); // replace non-digits with empty string
+                productReviewMap.put(productParentWebElement, reviewNumber);
+            }
 
-            // String ratingCheckBoxLabel = "4"; // 4★ & above
-            // String ratingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+ratingCheckBoxLabel+"')]//input[@type='checkbox']";
-            // Wrappers.clickWebElement(driver, By.xpath(ratingCheckBoxXpath));
-            // System.out.println("Log : Filtered by "+ratingCheckBoxLabel+"★ & above");
+            List<Map.Entry<WebElement,Integer>> sortedProductReviewMap = new ArrayList<>(productReviewMap.entrySet());
+            sortedProductReviewMap.sort(Map.Entry.<WebElement,Integer>comparingByValue().reversed());   // sorted in descending order 
+
+            System.out.println("Top 5 products with highest reviews : ");
+            for(int i = 0; i<5; i++) {
+                Map.Entry<WebElement,Integer> productEntry = sortedProductReviewMap.get(i);
+                WebElement productWebElement = productEntry.getKey();
+                System.out.println("Product Review Count: "+productEntry.getValue());
+                WebElement productTitleElement = productWebElement.findElement(By.xpath(productTitleXpath)); 
+                System.out.println("Product Title: "+productTitleElement.getAttribute("title"));
+                WebElement productImageElement = productWebElement.findElement(By.xpath(productImageURLXpath));
+                System.out.println("Product Image URL: "+productImageElement.getAttribute("src"));
+                System.out.println("");
+            }
             
-            Thread.sleep(50000);
+            Thread.sleep(5000);
             
             sa.assertAll();
 
