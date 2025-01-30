@@ -36,7 +36,7 @@ public class TestCases {
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase01() {
         System.out.println("Test Case 01 : Start");
         try {
@@ -46,7 +46,7 @@ public class TestCases {
             Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
             System.out.println("Log : Opened flipkart.com");
 
-            sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
+            Assert.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
 
             String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
             WebElement searchInputBox = Wrappers.findWebElement(driver, By.xpath(searchInputBoxXpath), 3, 1);
@@ -82,7 +82,7 @@ public class TestCases {
         System.out.println("Test Case 01 : End");
     }
     
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -92,7 +92,7 @@ public class TestCases {
             Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
             System.out.println("Log : Opened flipkart.com");
 
-            sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
+            Assert.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
 
             String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
             WebElement searchInputBox = Wrappers.findWebElement(driver, By.xpath(searchInputBoxXpath), 3, 1);
@@ -103,12 +103,12 @@ public class TestCases {
 
             // This xpath with only locate items that have a discount
             String discountPercentXpath = "//div[@class='hl05eU']/div[@class='UkUFwK']//span";
-            String productNameXpath = ".//ancestor::div[@class='yKfJKb row']//descendant::div[@class='KzDlHZ']"; // child xapth of discountPercentXpath
+            String productNameXpath = ".//ancestor::div[@class='yKfJKb row']//descendant::div[@class='KzDlHZ']"; // child xapth of discountPercentXpath, non-discounted elements will be ignored
             
 
             List<WebElement> discountPercentWebElements = Wrappers.findWebElementList(driver, By.xpath(discountPercentXpath), 3, 1);
 
-            int discountPercentToVerify = 10;
+            int discountPercentToVerify = 17;
             HashMap<String, Integer> productDiscountMap = new HashMap<String, Integer>();
             for (WebElement discountPercentWebElement : discountPercentWebElements) {
                 int discountPercent = Integer.parseInt(discountPercentWebElement.getText().replace("% off", "")); 
@@ -149,7 +149,7 @@ public class TestCases {
             Wrappers.loginPopUpClose(driver); // closing ocassionally apearing login popup
             System.out.println("Log : Opened flipkart.com");
 
-            sa.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
+            Assert.assertTrue(driver.getCurrentUrl().contains("flipkart.com"), "Current page is not flipkart.com");
 
             // search for Coffee Mug
             String searchInputBoxXpath = "//form[@action='/search']//input[@type='text']";
@@ -159,47 +159,31 @@ public class TestCases {
             searchInputBox.sendKeys(Keys.ENTER);
             System.out.println("Log : Search for Coffee Mug");
 
-            String customerRatingDropDownXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]"; // when Customer Ratings rating dropdown is closed
-            String customerRatingDropDownOpenedXpath = "//section[descendant::div[contains(text(),'Customer Ratings')]]//div[@class='SDsN9S']"; // div[@class='SDsN9S'] is present only when the dropdown is opened
-
             int rating = 4;
             String customerRatingOptionLabelXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//div[@class='_6i1qKy']"; // xpath for dropdown option label
             jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingOptionLabelXpath))); // scroll the label into center of the viewport
             String customerRatingCheckBoxXpath = "//div[contains(@title,'& above') and contains(@title,'"+rating+"')]//input[@type='checkbox']//following-sibling::div[1]"; 
             driver.findElement(By.xpath(customerRatingCheckBoxXpath)).click();
 
-            Thread.sleep(5000); 
-            //Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
-
-            // WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
-            // if(wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(customerRatingDropDownOpenedXpath)))!=null) {
-            //     jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingCheckBoxXpath)));
-            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
-            //     System.out.println("Log : Clicked on Customer Ratings Checkbox");
-            //     System.out.println("Log : Filtered by "+rating+"* & above");
-            // } else {
-            //     jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", driver.findElement(By.xpath(customerRatingDropDownXpath)));
-            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingDropDownXpath));
-            //     System.out.println("Log : Clicked on Customer Ratings Dropdown");
-            //     Wrappers.clickWebElement(driver, By.xpath(customerRatingCheckBoxXpath));
-            //     System.out.println("Log : Filtered by "+rating+"* & above");
-            // }
+            Thread.sleep(5000); // wait for all new products to load
             
             String productreviewNumberXpath = "//span[contains(@class,'Wphh3N')]"; // parent xpath
             String productParentXpath = ".//ancestor::div[@class='slAVV4']"; // parent xpath of productreviewNumberXpath
             String productImageURLXpath = ".//descendant::img"; // child xpath of productreviewNumberXpath, @src contains the image url
             String productTitleXpath = ".//descendant::a[@class='wjcEIp']"; // child xpath of productreviewNumberXpath, @title contains the title
 
-            HashMap<WebElement, Integer> productReviewMap = new HashMap<WebElement, Integer>(); // map to store product and its review count
+            HashMap<WebElement, Integer> productReviewMap = new HashMap<WebElement, Integer>(); // HashMap to store product and its review count
 
             List<WebElement> reviewNumberWebElements = Wrappers.findWebElementList(driver, By.xpath(productreviewNumberXpath), 3, 1);
 
+            // iterate through all the review numbers and store the product and its review count in the HashMap
             for (WebElement reviewInteger : reviewNumberWebElements) {
                 WebElement productParentWebElement = reviewInteger.findElement(By.xpath(productParentXpath));
                 int reviewNumber = Integer.parseInt(reviewInteger.getText().replaceAll("\\D", "")); // replace non-digits with empty string
                 productReviewMap.put(productParentWebElement, reviewNumber);
             }
 
+            // sort the map in descending order
             List<Map.Entry<WebElement,Integer>> sortedProductReviewMap = new ArrayList<>(productReviewMap.entrySet());
             sortedProductReviewMap.sort(Map.Entry.<WebElement,Integer>comparingByValue().reversed());   // sorted in descending order 
 
@@ -214,8 +198,6 @@ public class TestCases {
                 System.out.println("Product Image URL: "+productImageElement.getAttribute("src"));
                 System.out.println("");
             }
-            
-            Thread.sleep(5000);
             
             sa.assertAll();
 

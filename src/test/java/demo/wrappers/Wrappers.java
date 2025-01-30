@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.devtools.idealized.Javascript;
@@ -23,7 +24,7 @@ public class Wrappers {
             if (wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(closeButtonXpath))) != null) {
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath(closeButtonXpath))).click();    
             }
-        } catch (Exception e) {
+        } catch (TimeoutException e) {
             // TODO: handle exception
             System.out.println("Error closing popup : " + e.getMessage());
         }
@@ -77,7 +78,7 @@ public class Wrappers {
         return null;
     }
 
-    public static void clickWebElement(WebDriver driver, By locator) {
+    public static void clickWebElement(WebDriver driver, By locator) throws Exception {
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.presenceOfElementLocated(locator));
@@ -90,23 +91,24 @@ public class Wrappers {
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Error in clicking element : "+e.getMessage());
+            throw e;
         }
     }
 
-    public static void sendKeys(WebDriver driver, By locator, String keys) {
+    public static void sendKeys(WebDriver driver, By locator, String keys) throws Exception {
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.presenceOfElementLocated(locator));
             wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
             wait.until(ExpectedConditions.elementToBeClickable(locator));
             WebElement textInputElement = Wrappers.findWebElement(driver, locator, 3, 1);
-            // WebElement textInputElement = driver.findElement(locator);
             textInputElement.click();
             textInputElement.clear();
             textInputElement.sendKeys(keys);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Error sending keys : " + e.getMessage());
+            throw e;
         }
     }
 
